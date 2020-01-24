@@ -37,10 +37,10 @@ class _MyHomePageState extends State<MyHomePage> {
   final List<Transaction> _transactions = [];
 
   void buildDefaultTransactions() {
-//    Transaction t1 = Transaction(20.34, "New Shoes", DateTime.now());
+    Transaction t1 = Transaction(20.34, "New Shoes", DateTime.now());
 //    Transaction t2 = Transaction(1322.45, "Grocery store", DateTime.now());
 
-//    _transactions.addAll([t1, t2]);
+   //_transactions.addAll([t1]);
   }
 
   void _addNewTransaction(Transaction transaction) {
