@@ -1,10 +1,10 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_spending_control/model/transaction.dart';
-import 'package:flutter_spending_control/widget/transaction_form.dart';
-import 'package:flutter_spending_control/widget/transactions.dart';
-import 'package:flutter_spending_control/widget/transactions_chart.dart';
+import './model/transaction.dart';
+import './widget/transaction_form.dart';
+import './widget/transactions.dart';
+import './widget/transactions_chart.dart';
 
 void main() => runApp(MyApp());
 

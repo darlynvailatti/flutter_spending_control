@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spending_control/model/transaction.dart';
-import 'package:flutter_spending_control/model/transaction_amount_controller.dart';
+import '../model/transaction_amount_controller.dart';
 
 class Chart extends StatelessWidget {
 

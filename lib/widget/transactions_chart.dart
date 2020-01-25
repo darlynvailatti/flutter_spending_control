@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spending_control/model/transaction.dart';
-import 'package:flutter_spending_control/model/transaction_amount_controller.dart';
-import 'package:flutter_spending_control/widget/chart.dart';
+import '../model/transaction.dart';
+import '../model/transaction_amount_controller.dart';
+import '../widget/chart.dart';
 
 class TransactionsChart extends StatelessWidget {
   final List<Transaction> _transactions;

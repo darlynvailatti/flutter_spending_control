@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spending_control/model/transaction.dart';
-import 'package:flutter_spending_control/util/date_util.dart';
+import '../model/transaction.dart';
+import '../util/date_util.dart';
 import 'package:intl/intl.dart';
 
 class TransactionCard extends StatelessWidget {

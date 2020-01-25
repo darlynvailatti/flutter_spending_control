@@ -1,6 +1,6 @@
 
-import 'package:flutter_spending_control/model/transaction.dart';
-import 'package:flutter_spending_control/model/transaction_amount_daily.dart';
+import './transaction.dart';
+import './transaction_amount_daily.dart';
 import 'package:intl/intl.dart';
 
 class TransactionAmountController {
