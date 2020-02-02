@@ -4,27 +4,28 @@ import '../model/transaction.dart';
 import '../widget/no_transactions.dart';
 import '../widget/transaction_card.dart';
 
-class Transactions extends StatelessWidget {
+class TransactionsListView extends StatelessWidget {
+
+  final Function deleteTransactionHandler;
   final List<Transaction> _transactions;
 
-  Transactions(this._transactions);
+  TransactionsListView(this._transactions, this.deleteTransactionHandler);
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> _transactionsCards = [];
 
-    _transactions.forEach((tx) {
-      TransactionCard transactionCard = TransactionCard(tx);
+    List<Widget> _transactionsCards = [];
+    List<Transaction> transactions = _transactions;
+
+    transactions.forEach((tx) {
+      TransactionCard transactionCard = TransactionCard(tx, deleteTransactionHandler);
       _transactionsCards.add(transactionCard);
     });
 
     return Container(
-      height: 450,
       child: _transactionsCards.isEmpty
           ? NoTransactions()
-          : ListView(
-              children: _transactionsCards,
-            ),
+          : ListView( children: _transactionsCards,),
     );
   }
 }

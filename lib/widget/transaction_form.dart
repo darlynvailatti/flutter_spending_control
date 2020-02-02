@@ -1,42 +1,34 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../model/transaction.dart';
 import '../util/date_util.dart';
-import 'package:intl/intl.dart';
 
 class TransactionForm extends StatefulWidget {
+  final Function addTransactionHandler;
 
-  final Function _confirmTransactionHandler;
-
-  TransactionForm(this._confirmTransactionHandler);
+  TransactionForm(this.addTransactionHandler);
 
   @override
   State<StatefulWidget> createState() {
-    return _TransactionFormState(_confirmTransactionHandler);
+    return _TransactionFormState();
   }
-
 }
 
-class _TransactionFormState extends State<TransactionForm>{
-
-  Function _transactionAddHandler;
+class _TransactionFormState extends State<TransactionForm> {
   Transaction _transaction;
 
   TextEditingController _amountController = TextEditingController();
   TextEditingController _descriptionController = TextEditingController();
   TextEditingController _dateTimeController = TextEditingController();
 
-  _TransactionFormState(this._transactionAddHandler);
-
-  void _addTransaction(){
+  void _addTransaction() {
     setState(() {
       _transaction.amount = double.parse(_amountController.text);
       _transaction.description = _descriptionController.text;
-      _transactionAddHandler(_transaction);
+      widget.addTransactionHandler(_transaction);
+      Navigator.of(context).pop();
     });
-    Navigator.of(context).pop();
   }
 
   Future<Null> _selectDate(BuildContext context) async {
@@ -48,51 +40,56 @@ class _TransactionFormState extends State<TransactionForm>{
     if (picked != null && picked != _transaction.dateTime)
       setState(() {
         _transaction.dateTime = picked;
-        _dateTimeController.text = DateUtil.formatDefaultDate(_transaction.dateTime);
+        _dateTimeController.text =
+            DateUtil.formatDefaultDate(_transaction.dateTime);
       });
   }
 
   @override
   void initState() {
-    _transaction = Transaction(0, "", DateTime.now());
+    _transaction = Transaction(
+        DateTime.now().millisecondsSinceEpoch, 0, "", DateTime.now());
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: <Widget>[
-          TextField(
-            controller: _descriptionController,
-            decoration: InputDecoration(
-                labelText: "Description"
+    return SingleChildScrollView(
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+        padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: <Widget>[
+            TextField(
+              controller: _descriptionController,
+              decoration: InputDecoration(labelText: "Description"),
             ),
-          ),
-          TextField(
-            controller: _amountController,
-            decoration: InputDecoration(
+            TextField(
+              controller: _amountController,
+              decoration: InputDecoration(
                 labelText: "Amount",
+              ),
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
             ),
-            keyboardType: TextInputType.numberWithOptions(decimal: true),
-          ),
-          TextField(
+            TextField(
               controller: _dateTimeController,
               decoration: InputDecoration(
                 labelText: "When",
               ),
-              onTap: () { _selectDate(context); },
+              onTap: () {
+                _selectDate(context);
+              },
               keyboardType: TextInputType.datetime,
-
-          ),
-          FlatButton(
-            child: Text("Add"),
-            onPressed: () => _addTransaction(),
-            textColor: Theme.of(context).primaryColor,
-          ),
-        ],
+            ),
+            FlatButton(
+              child: Text("Add"),
+              onPressed: () => _addTransaction(),
+              textColor: Theme.of(context).primaryColor,
+            ),
+          ],
+        ),
       ),
     );
   }

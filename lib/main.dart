@@ -1,9 +1,7 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
-import './model/transaction.dart';
+import 'package:flutter_spending_control/model/transaction.dart';
 import './widget/transaction_form.dart';
-import './widget/transactions.dart';
+import './widget/transactions_list_view.dart';
 import './widget/transactions_chart.dart';
 
 void main() => runApp(MyApp());
@@ -17,8 +15,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.purple,
         accentColor: Colors.amber,
+        errorColor: Colors.red,
       ),
-      home: MyHomePage(title: 'Expenses Control'),
+      home: MyHomePage(title: "Personal Expenses"),
     );
   }
 }
@@ -29,67 +28,130 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _MyHomePageState createState() {
+    return _MyHomePageState();
+  }
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  List<Transaction> transactions;
+  bool _showChart = false;
 
-  final List<Transaction> _transactions = [];
-
-  void buildDefaultTransactions() {
-    Transaction t1 = Transaction(20.34, "New Shoes", DateTime.now());
-//    Transaction t2 = Transaction(1322.45, "Grocery store", DateTime.now());
-
-   //_transactions.addAll([t1]);
-  }
-
-  void _addNewTransaction(Transaction transaction) {
+  void _startAddNewTransaction(BuildContext context) {
     setState(() {
-      _transactions.add(transaction);
+      showModalBottomSheet(
+          context: context,
+          builder: (_) {
+            return TransactionForm(addTransaction);
+          });
     });
   }
 
-  void _startAddNewTransaction(BuildContext context){
-    showModalBottomSheet(context: context, builder: (_) {
-      return TransactionForm(_addNewTransaction);
+  void addTransaction(Transaction transaction) {
+    setState(() {
+      transactions.add(transaction);
+    });
+  }
+
+  void deleteTransaction(Transaction transaction) {
+    setState(() {
+      transactions.removeWhere((t) => t.id == transaction.id);
     });
   }
 
   @override
   void initState() {
-    buildDefaultTransactions();
+    transactions = [];
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+
+    var appBar = AppBar(
+      title: Text(widget.title),
+      actions: [
+        IconButton(
+          icon: Icon(Icons.add),
+          onPressed: () {
+            _startAddNewTransaction(context);
+          },
+        ),
+      ],
+    );
+
+    var preferredSizeAppBar = appBar.preferredSize;
+    Size size = MediaQuery.of(context).size;
+    var widthSize = size.width;
+    var heightSize = size.height;
+    var paddingOfDevice = MediaQuery.of(context).padding;
+    var topPaddingOfDevice = paddingOfDevice.top;
+
+    var availableHeightSize =
+        heightSize - topPaddingOfDevice - preferredSizeAppBar.height;
+
+    double percentOfChartSize = isLandscape ? 0.7 : 0.3;
+
+    var containerChartWidget = Container(
+      child: TransactionsChart(transactions),
+      width: MediaQuery.of(context).size.width,
+      height: availableHeightSize * percentOfChartSize,
+    );
+
+    var switchButtonWidget =  Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text("Show chart?"),
+        Switch(
+          value: _showChart,
+          onChanged: (val) {
+            setState(() {
+              _showChart = val;
+            });
+          },
+        )
+      ],
+    );
+
+    var expandedTransactionsWidget =
+      Expanded(
+        child: TransactionsListView(transactions, deleteTransaction),
+      );
+
+    List<Widget> contextWidgetsView = [];
+
+    if(isLandscape) {
+      _showChart ?
+        contextWidgetsView.addAll([
+          switchButtonWidget,
+          containerChartWidget
+        ]) :
+        contextWidgetsView.addAll([
+          switchButtonWidget,
+          expandedTransactionsWidget
+        ]);
+    }
+
+    if(!isLandscape)
+      contextWidgetsView.addAll(
+        [containerChartWidget, expandedTransactionsWidget]
+      );
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: (){ _startAddNewTransaction(context); },
-          ),
-        ],
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Column(
-            children: <Widget>[
-              Container(
-                child: TransactionsChart(_transactions),
-                width: double.infinity,
-                ),
-            ],
-          ),
-          Transactions(_transactions),
-        ],
+      appBar: appBar,
+      body: Flex(
+        direction: Axis.vertical,
+        mainAxisSize: MainAxisSize.max,
+        verticalDirection: VerticalDirection.down,
+        children: contextWidgetsView,
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: (){ _startAddNewTransaction(context); },
+        onPressed: () {
+          _startAddNewTransaction(context);
+        },
       ),
     );
   }

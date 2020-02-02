@@ -2,26 +2,27 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../model/transaction.dart';
 import '../util/date_util.dart';
-import 'package:intl/intl.dart';
 
 class TransactionCard extends StatelessWidget {
+
+  final Function _deleteTransactionHandler;
   final Transaction _transaction;
   final double _amountContainerWith = 140;
 
-  TransactionCard(this._transaction);
+  TransactionCard(this._transaction, this._deleteTransactionHandler);
 
-  Text _getAmountText(BuildContext context){
+  Text _getAmountText(BuildContext context) {
     return Text(
       '\$${_transaction.amount.toStringAsFixed(2)}',
       style: TextStyle(
-        fontSize: 20,
         fontWeight: FontWeight.bold,
-        color: Theme.of(context).primaryColor,
+        fontSize: 10,
+        color: Theme.of(context).buttonColor,
       ),
     );
   }
 
-  Text _getDescriptionText(){
+  Text _getDescriptionText() {
     return Text(
       _transaction.description,
       style: TextStyle(
@@ -31,7 +32,7 @@ class TransactionCard extends StatelessWidget {
     );
   }
 
-  Text _getDateTimeText(){
+  Text _getDateTimeText() {
     return Text(
       DateUtil.formatDefaultDate(_transaction.dateTime),
       style: TextStyle(
@@ -43,42 +44,27 @@ class TransactionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Card(
       elevation: 3,
-      child: Row(
-        children: <Widget>[
-          Container(
-            child: Column(
-              children: [
-                _getAmountText(context)
-              ],
-              crossAxisAlignment: CrossAxisAlignment.start,
-            ),
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-            margin: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-            width: _amountContainerWith,
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: Theme.of(context).primaryColor,
-                width: 3,
-                style: BorderStyle.solid,
-              ),
-            ),
-          ),
-          Container(
-            child: Column(
-              children: <Widget>[
-                _getDescriptionText(),
-                _getDateTimeText(),
-              ],
-              crossAxisAlignment: CrossAxisAlignment.start,
-            ),
-            padding: EdgeInsets.symmetric(
-              vertical: 10,
-              horizontal: 10,
-            ),
-          ),
-        ],
+      child: ListTile(
+        contentPadding: EdgeInsets.all(5),
+        leading: Container(
+          child: CircleAvatar(
+              radius: 60,
+              child: Container(
+                alignment: Alignment.center,
+                width: 50,
+                child: _getAmountText(context),
+              )),
+        ),
+        title: _getDescriptionText(),
+        trailing: IconButton(
+          icon: Icon(Icons.delete),
+          color: Theme.of(context).errorColor,
+          onPressed: (){ _deleteTransactionHandler(_transaction); },
+        ),
+        subtitle: _getDateTimeText(),
       ),
     );
   }

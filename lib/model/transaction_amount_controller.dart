@@ -16,14 +16,11 @@ class TransactionAmountController {
 
     _transactionsPerDay = [];
 
-    if(_transactions.isEmpty){
-      print("No transactions to amount");
-      return;
-    }
-
     double totalAmount = 0;
-    totalAmount = _transactions.map((transaction) => transaction.amount)
-        .reduce((sum, element) => sum + element);
+    if(_transactions.isNotEmpty){
+      totalAmount = _transactions.map((transaction) => transaction.amount)
+          .reduce((sum, element) => sum + element);
+    }
 
     var today = new DateTime.now();
     var sixDaysInPastFromToday = today.subtract(new Duration(days: 6));
@@ -39,18 +36,23 @@ class TransactionAmountController {
           dayName: dayOfWeek,
       );
 
-      var transactionsOfDay = _transactions.where((t) => t.dateTime.day == day.day).toList();
 
-      if(transactionsOfDay.isNotEmpty){
-        var totalAmountOfDay = transactionsOfDay.map((t) => t.amount).reduce((a,
-            b) => a + b);
-        transactionAmountDaily = TransactionAmountDaily(
-            dayNumber: day.day,
-            dayName: dayOfWeek,
-            totalOfPeriod: totalAmount,
-            amount: totalAmountOfDay
-        );
+      List<Transaction> transactionsOfDay = [];
+      if(_transactions.isNotEmpty){
+        transactionsOfDay = _transactions.where((t) => t.dateTime.day == day.day).toList();
       }
+
+      double totalAmountOfDay = 0;
+      if(transactionsOfDay.isNotEmpty) {
+        totalAmountOfDay = transactionsOfDay.map((t) => t.amount).reduce((a, b) => a + b);
+      }
+      transactionAmountDaily = TransactionAmountDaily(
+          dayNumber: day.day,
+          dayName: dayOfWeek,
+          totalOfPeriod: totalAmount,
+          amount: totalAmountOfDay
+      );
+
       _transactionsPerDay.add(transactionAmountDaily);
     }
   }
